@@ -18,15 +18,19 @@ require('dotenv').config()
 
 // Allow requests from your frontend on Vercel
 const allowedOrigins = [
-  "https://dev-tinder-web-one.vercel.app",
-  "http://localhost:3000"
+  "https://dev-tinder-web-one.vercel.app"
 ];
-app.use(
-  cors({
-    origin: allowedOrigins,
-    credentials: true, // Allow cookies
-  })
-);
+// app.use(
+//   cors({
+//     origin: allowedOrigins,
+//     credentials: true, // Allow cookies
+//   })
+// );
+app.use(cors({
+  origin: 'https://dev-tinder-web-one.vercel.app',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 
 app.use(express.json());
 app.use(cookieParser()); // Place cookie-parser before route handlers
