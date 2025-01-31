@@ -10,12 +10,21 @@ const userRouter = require('./routes/user')
 const { userAuth } = require('./middlewares/auth');
 const User = require("./models/user");
 const cors = require('cors')
+const PORT = process.env.PORT || 4000;
 require('dotenv').config()
 // Middleware Setup
-app.use(cors({
-  origin:"http://localhost:5173",
-  credentials:true
-}));
+
+
+
+// Allow requests from your frontend on Vercel
+const allowedOrigins = ["https://dev-tinder-web-one.vercel.app"];
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true, // Allow cookies & authentication headers
+  })
+);
+
 app.use(express.json());
 app.use(cookieParser()); // Place cookie-parser before route handlers
 
@@ -28,7 +37,7 @@ app.use("/",userRouter);
 connectDB()
   .then(() => {
     console.log('Database connected successfully');
-    app.listen(3000, () => {
+    app.listen(PORT, () => {
       console.log("Server is listening on port 3000");
     });
   })
