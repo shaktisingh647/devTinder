@@ -75,10 +75,23 @@ authRouter.post("/login", async (req,res)=>{
           if(isPasswordValid){
               // creating jwt token
               // we have to create the token at the password level when the user is authenticated then only we will give the token
-              const token =  jwt.sign({_id:user._id},"shaktisinghsecretkey");
+              // const token =  jwt.sign({_id:user._id},"shaktisinghsecretkey");
+              const token = jwt.sign(
+                { _id: user._id },
+                process.env.JWT_SECRET || "",  
+                { expiresIn: '8h' }
+              );
+              
+              
               // entering the token into the cookie
               
-              res.cookie("token",token); 
+              
+              res.cookie("token", token, {
+                httpOnly: true,
+                secure: true,  // Use `true` in production (HTTPS)
+                sameSite: "None", // Must be "None" when credentials are sent
+              });
+               
               res.send(user);
               
           }else{
