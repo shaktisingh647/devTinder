@@ -42,13 +42,17 @@ userRouter.get("/user/connections",userAuth,async(req,res)=>{
 })
 
 
+// filepath: /C:/Users/PRIYA SINGH/OneDrive/Desktop/DevTinder/src/routes/user.js
 userRouter.get("/feed", userAuth, async (req, res) => {
   try {
     const loggedInUser = req.user;
+    console.log("Logged in user:", loggedInUser); // Log the logged-in user
+
     const page = parseInt(req.query.page) || 1;
     let limit = parseInt(req.query.limit) || 10;
     limit = limit > 50 ? 50 : limit;
-    const skip = (page-1)*limit;
+    const skip = (page - 1) * limit;
+
     // Find all connection requests sent or received by the logged-in user
     const connectionRequests = await ConnectionRequest.find({
       $or: [
@@ -56,6 +60,8 @@ userRouter.get("/feed", userAuth, async (req, res) => {
         { toUserId: loggedInUser._id },
       ],
     }).select("fromUserId toUserId");
+
+    console.log("Connection requests:", connectionRequests); // Log the connection requests
 
     // Add users involved in connection requests to the exclusion set
     const hideUsersFromFeed = new Set();
@@ -70,11 +76,14 @@ userRouter.get("/feed", userAuth, async (req, res) => {
         { _id: { $nin: Array.from(hideUsersFromFeed) } },
         { _id: { $ne: loggedInUser._id } },
       ],
-    }).select(["firstName","lastName","photoUrl","age","about","gender","skills"]).skip(skip).limit(limit);
+    }).select(["firstName", "lastName", "photoUrl", "age", "about", "gender", "skills"]).skip(skip).limit(limit);
+
+    console.log("Users:", users); // Log the users
 
     // Send the filtered users as the response
     res.json({ users, connectionRequests });
   } catch (err) {
+    console.error("Error fetching feed:", err.message); // Log the error
     res.status(400).json({ error: err.message });
   }
 });
