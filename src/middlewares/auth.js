@@ -1,7 +1,7 @@
 // authentication of theconst adminAuth = (req,res)=>{
     const jwt = require('jsonwebtoken');
     const User = require('../models/user');
-    const cookieParser = require("cookie-parser");
+    
     const userAuth = async (req,res,next)=>{
     // read the token from the cookies
     // since the cookies is present under the token
@@ -10,10 +10,10 @@
     if(!token){
         throw new Error("User Not Authenticated");
     }
-    console.log(token);
-    const decodedData = await jwt.verify(token,"shaktisinghsecretkey");
+    
+    const decodedData = await jwt.verify(token ,process.env.JWT_SECRET);
     const {_id} = decodedData;
-    const user = await User.findById(_id);
+    const user = await User.findById(_id)
     if(!user){
         return res.status(400).send("User Not Found");
     }
